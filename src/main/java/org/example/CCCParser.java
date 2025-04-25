@@ -101,37 +101,6 @@ public class CCCParser {
         return output;
     }
 
-
-    private static List<DecoratedNode<Optional<IASTFileLocation>>> filterAttachedComments0(final List<DecoratedNode<Optional<IASTFileLocation>>> input) {
-        final List<DecoratedNode<Optional<IASTFileLocation>>> output = new ArrayList<>();
-        if (!input.isEmpty()) {
-            if (input.getFirst().declaration() instanceof IASTDeclaration) {
-                output.add(input.getFirst());
-            }
-        }
-        for (int i = 0; i < input.size() - 1; i++) {
-            if (input.get(i).declaration() instanceof IASTComment comment) {
-                if (input.get(i+1).declaration() instanceof IASTDeclaration declaration) {
-                    boolean linkedComment = true;
-                    Optional<IASTFileLocation> lastClosed = input.get(i+1).decoration();
-                    if (lastClosed.isPresent()) {
-                        if (lastClosed.get().getNodeOffset() > comment.getFileLocation().getNodeOffset()) {
-                            // the node before the declaration is after the comment
-                            // so the comment does not relate to the declaration
-                            linkedComment = false;
-                        }
-                    }
-                    // Yield the declaration, and the preceding comment if it is linked
-                    if (linkedComment) {
-                        output.add(input.get(i));
-                    }
-                    output.add(input.get(i+1));
-                }
-            }
-        }
-        return output;
-    }
-
     public static IASTTranslationUnit getIASTTranslationUnit(char[] code) throws Exception {
         FileContent fc = FileContent.create("", code);
         Map<String, String> macroDefinitions = new HashMap<>();
