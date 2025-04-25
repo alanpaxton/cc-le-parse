@@ -1,18 +1,16 @@
 package org.example;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class FileChars {
 
     static class ChunkBuffer {
 
-        record Chunk(char[] content, int len) {};
+        record Chunk(char[] content, int len) {}
 
         final List<Chunk> chunks = new ArrayList<>();
 
@@ -34,7 +32,7 @@ public class FileChars {
         private void compress() {
             // The final "compressed" version has a single array
             if (chunks.size() == 1) {
-                final Chunk zero = chunks.get(0);
+                final Chunk zero = chunks.getFirst();
                 if (zero.len == zero.content.length) {
                     return;
                 }
@@ -42,7 +40,7 @@ public class FileChars {
 
             // Even if there are 0 chunks, this works
             int len = length();
-            char onebuf[] = new char[len];
+            char[] onebuf = new char[len];
             int pos = 0;
             for (Chunk chunk : chunks) {
                 System.arraycopy(chunk.content, 0, onebuf, pos, chunk.len);
@@ -60,7 +58,7 @@ public class FileChars {
          */
         char[] charArray() {
             compress();
-            return chunks.get(0).content;
+            return chunks.getFirst().content;
         }
     }
 
