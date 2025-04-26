@@ -1,4 +1,4 @@
-package org.example;
+package com.evolvedbinary.ccc;
 
 import org.eclipse.cdt.core.dom.ast.*;
 
@@ -6,6 +6,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * A class that transforms a translation unit into sometnig useful for a particular task
+ * For example, {@link DeclarationTransformer} pulls out top level declarations and associated comments.
+ *
+ * This class contains a number of static methods useful to building transformers
+ * as well as the static subclass {@link DeclarationTransformer} which is the first transformer we built;
+ * obviously the static helpers initially reflect the needs of this transformer.
+ *
+ * @param <TTarget>
+ */
 public abstract class Transformer<TTarget> {
 
     private final IASTTranslationUnit translationUnit;

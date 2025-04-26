@@ -1,4 +1,4 @@
-package org.example;
+package com.evolvedbinary.ccc;
 
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
 import org.eclipse.cdt.core.dom.ast.gnu.cpp.GPPLanguage;
@@ -10,6 +10,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Build a (parsed) translation unit from an input file
+ * by isolating the incantations necessary to invoke CDT
+ */
 public class TranslationUnitBuilder {
 
     public static IASTTranslationUnit getIASTTranslationUnit(File file) throws Exception {

@@ -1,4 +1,4 @@
-package org.example;
+package com.evolvedbinary.ccc;
 
 import java.io.File;
 import java.io.FileReader;
@@ -65,6 +65,17 @@ public class FileChars {
 
     private final static int CHUNK_SIZE = 65536;
 
+    /**
+     * Efficiently read a large file into a character array
+     * Allocate a number of fixed size, large buffers (chunks)
+     * Fill each of those in turn
+     * Then create a single <code>char[]</code> of the required size
+     * and fill it from the chunks
+     *
+     * @param file to be read
+     * @return an array of the contents of the file
+     * @throws IOException if a problem occurs while reading the file
+     */
     public static char[] read(File file) throws IOException {
         final ChunkBuffer chunks = new ChunkBuffer();
         try (FileReader reader = new FileReader(file)) {

@@ -1,10 +1,17 @@
-package org.example;
+package com.evolvedbinary.ccc;
 
 import org.eclipse.cdt.core.dom.ast.*;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTTemplateDeclaration;
 
 import java.util.*;
 
+/**
+ * Walk the AST of the parsed input file(s)
+ * Build a list of the contained declarations
+ * Together with some extra information - to wit, the location of the last visited declaration which had been left
+ * before this one was entered - that lets us check by file position whether comments (retrieved elsewhere)
+ * are attached to the declaration in hand.
+ */
 public class FilterVisitor extends ASTVisitor {
 
     public FilterVisitor() {
@@ -19,7 +26,7 @@ public class FilterVisitor extends ASTVisitor {
         shouldVisitTypeIds = true;
     }
 
-    private List<DecoratedNode<Optional<IASTFileLocation>>> topLevelDeclarations = new ArrayList<>();
+    private final List<DecoratedNode<Optional<IASTFileLocation>>> topLevelDeclarations = new ArrayList<>();
 
     private Optional<IASTFileLocation> lastClosed = Optional.empty();
 
@@ -44,7 +51,7 @@ public class FilterVisitor extends ASTVisitor {
         return ASTVisitor.PROCESS_CONTINUE;
     }
 
-    private int visitDefault(IASTDeclaration declaration) {
+    private int visitDefault(final IASTDeclaration declaration) {
         return ASTVisitor.PROCESS_CONTINUE;
     }
 
@@ -53,7 +60,7 @@ public class FilterVisitor extends ASTVisitor {
     }
 
     @Override
-    public int visit(IASTDeclaration declaration)
+    public int visit(final IASTDeclaration declaration)
     {
         // more cases to be added
         return switch (declaration) {
@@ -63,7 +70,7 @@ public class FilterVisitor extends ASTVisitor {
     }
 
     @Override
-    public int leave(IASTDeclaration declaration)
+    public int leave(final IASTDeclaration declaration)
     {
         lastClosed = Optional.of(declaration.getFileLocation());
 

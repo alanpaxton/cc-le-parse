@@ -1,4 +1,4 @@
-package org.example;
+package com.evolvedbinary.ccc;
 
 import java.nio.file.Path;
 
