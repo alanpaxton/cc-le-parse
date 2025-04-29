@@ -15,6 +15,11 @@ public class Boilerplate {
       #pragma once
             
       #include <jni.h>
+      
+      #include "rocksdb/db.h"
+      #include "rocksdb/status.h"
+      
+      #include "rocksjni/portal/common.h"
                   
       """;
 
