@@ -43,7 +43,11 @@ public class Boilerplate {
     }
 
     public StringBuilder include(final StringBuilder sb, final String namedDependency) {
-        sb.append("#include \"rocksjni/portal/").append(Naming.classToHeader(namedDependency)).append(".h\"").append('\n');
+        if (RepositoryConfiguration.explicitDependencies.containsKey(namedDependency)) {
+            sb.append("#include \"").append(RepositoryConfiguration.explicitDependencies.get(namedDependency)).append(".h\"").append('\n');
+        } else {
+            sb.append("#include \"rocksjni/portal/").append(Naming.classToHeader(namedDependency)).append(".h\"").append('\n');
+        }
 
         return sb;
     }
