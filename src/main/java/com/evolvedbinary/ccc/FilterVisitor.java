@@ -4,6 +4,8 @@ import org.eclipse.cdt.core.dom.ast.*;
 import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTTemplateDeclaration;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Walk the AST of the parsed input file(s)
@@ -14,8 +16,12 @@ import java.util.*;
  */
 public class FilterVisitor extends ASTVisitor {
 
-    public FilterVisitor() {
+    private final DeclarationDependencies declarationDependencies;
+
+    public FilterVisitor(final DeclarationDependencies declarationDependencies) {
         super();
+
+        this.declarationDependencies = declarationDependencies;
 
         shouldVisitNames = true;
         shouldVisitDeclarations = true;
@@ -46,12 +52,16 @@ public class FilterVisitor extends ASTVisitor {
                 simpleCount++;
             }
 
+            declarationDependencies.addDependencies(simpleDeclaration);
+
             topLevelDeclarations.add(new DecoratedNode<>(targetDeclaration, lastClosed));
         }
+
         return ASTVisitor.PROCESS_CONTINUE;
     }
 
     private int visitDefault(final IASTDeclaration declaration) {
+
         return ASTVisitor.PROCESS_CONTINUE;
     }
 

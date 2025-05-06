@@ -18,9 +18,7 @@ public class Boilerplate {
       
       #include "rocksdb/db.h"
       #include "rocksdb/status.h"
-      
       #include "rocksjni/portal/common.h"
-                  
       """;
 
     private final String namespaceBegin = """
@@ -28,12 +26,24 @@ public class Boilerplate {
       """;
 
     private final String namespaceEnd = """
-      }
+      
+      }  // namespace ROCKSDB_NAMESPACE
       """;
 
-    public StringBuilder preamble(final StringBuilder sb) {
+    public StringBuilder header(final StringBuilder sb) {
         sb.append(header);
-        sb.append(namespaceBegin);
+
+        return sb;
+    }
+
+    public StringBuilder preamble(final StringBuilder sb) {
+        sb.append('\n').append(namespaceBegin);
+
+        return sb;
+    }
+
+    public StringBuilder include(final StringBuilder sb, final String namedDependency) {
+        sb.append("#include \"rocksjni/portal/").append(Naming.classToHeader(namedDependency)).append(".h\"").append('\n');
 
         return sb;
     }

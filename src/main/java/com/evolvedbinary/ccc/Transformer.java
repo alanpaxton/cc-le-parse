@@ -5,6 +5,7 @@ import org.eclipse.cdt.core.dom.ast.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * A class that transforms a translation unit into sometnig useful for a particular task
@@ -19,17 +20,19 @@ import java.util.Optional;
 public abstract class Transformer<TTarget> {
 
     private final IASTTranslationUnit translationUnit;
+    private final DeclarationDependencies declarationDependencies;
 
-    public Transformer(final IASTTranslationUnit translationUnit) {
+    public Transformer(final IASTTranslationUnit translationUnit, final DeclarationDependencies declarationDependencies) {
         this.translationUnit = translationUnit;
+        this.declarationDependencies = declarationDependencies;
     }
 
     public abstract TTarget transform();
 
     public static class DeclarationTransformer extends Transformer<List<DecoratedNode<List<IASTComment>>>> {
 
-        public DeclarationTransformer(IASTTranslationUnit translationUnit) {
-            super(translationUnit);
+        public DeclarationTransformer(IASTTranslationUnit translationUnit, final DeclarationDependencies declarationDependencies) {
+            super(translationUnit, declarationDependencies);
         }
 
         @Override
@@ -39,11 +42,11 @@ public abstract class Transformer<TTarget> {
     }
 
     protected List<DecoratedNode<List<IASTComment>>> getDecoratedNodes() {
-        final FilterVisitor filterVisitor = new FilterVisitor();
+        final FilterVisitor filterVisitor = new FilterVisitor(declarationDependencies);
         translationUnit.accept(filterVisitor);
         System.out.println(filterVisitor);
         IASTComment[] comments = translationUnit.getComments();
-        List<DecoratedNode<Optional<IASTFileLocation>>> topLevelComments = List.of(comments).stream().map(comment -> new DecoratedNode<>(comment, Optional.of(comment.getFileLocation()))).toList();
+        List<DecoratedNode<Optional<IASTFileLocation>>> topLevelComments = Stream.of(comments).map(comment -> new DecoratedNode<>(comment, Optional.of(comment.getFileLocation()))).toList();
         List<DecoratedNode<Optional<IASTFileLocation>>> topLevelDeclarations = filterVisitor.getTopLevelDeclarations();
         List<DecoratedNode<Optional<IASTFileLocation>>> allNodes = new ArrayList<>();
         allNodes.addAll(topLevelComments);
@@ -94,7 +97,8 @@ public abstract class Transformer<TTarget> {
                     comments.add(comment);
                 } else if (input.get(i+j).declaration() instanceof IASTDeclaration declaration) {
                     IASTNode parentNode = declaration.getParent();
-                    Optional<IASTFileLocation> lastClosed = input.get(i+j).decoration();
+                    final DecoratedNode<Optional<IASTFileLocation>> inputNode = input.get(i+j);
+                    Optional<IASTFileLocation> lastClosed = inputNode.decoration();
                     List<IASTComment> filtered = new ArrayList<>();
                     for (IASTComment comment : comments) {
                         if (lastClosed.isEmpty() || lastClosed.get().getNodeOffset() < comment.getFileLocation().getNodeOffset()) {

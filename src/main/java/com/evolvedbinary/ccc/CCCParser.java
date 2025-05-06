@@ -25,18 +25,24 @@ public class CCCParser {
     private static void portal() throws Exception {
         File file = RepositoryConfiguration.portal.toFile();
         IASTTranslationUnit translationUnit = TranslationUnitBuilder.getIASTTranslationUnit(file);
+        final DeclarationDependencies declarationDependencies = new DeclarationDependencies();
 
-        Transformer.DeclarationTransformer declarationTransformer = new Transformer.DeclarationTransformer(translationUnit);
+        Transformer.DeclarationTransformer declarationTransformer = new Transformer.DeclarationTransformer(translationUnit, declarationDependencies);
         final List<DecoratedNode<List<IASTComment>>> declarationsWithComments = declarationTransformer.transform();
 
         final Boilerplate boilerplate = new Boilerplate();
         declarationsWithComments.forEach(node -> {
             StringBuilder sb = new StringBuilder();
+            boilerplate.header(sb);
+            for (String namedDependency : declarationDependencies.getDeclaredDependencies(node.getDeclarationClassName())) {
+                boilerplate.include(sb, namedDependency);
+            }
             boilerplate.preamble(sb);
             node.buildString(sb);
             boilerplate.postamble(sb);
 
-            Path path = Path.of("portal").resolve(Path.of(node.getDeclarationName() + ".h"));
+            final String header = Naming.classToHeader(node.getDeclarationClassName());
+            Path path = Path.of("portal").resolve(Path.of(header + ".h"));
             try {
                 FileOutput fileOutput = new FileOutput(path, sb);
                 fileOutput.write();
